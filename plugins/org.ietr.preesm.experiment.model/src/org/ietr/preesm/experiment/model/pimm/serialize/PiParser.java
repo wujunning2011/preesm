@@ -423,14 +423,27 @@ public class PiParser {
 		String sourceName = edgeElt.getAttribute(PiIdentifiers.FIFO_SOURCE);
 		String targetName = edgeElt.getAttribute(PiIdentifiers.FIFO_TARGET);
 		AbstractActor source = (AbstractActor) graph.getVertexNamed(sourceName);
-		AbstractActor target = (AbstractActor) graph.getVertexNamed(targetName);
+		Parameterizable target = (Parameterizable) graph.getVertexNamed(targetName);
 		if (source == null) {
 			throw new RuntimeException("Edge source vertex " + sourceName
 					+ " does not exist.");
 		}
 		if (target == null) {
-			throw new RuntimeException("Edge target vertex " + sourceName
-					+ " does not exist.");
+			// The target can also be a Delay associated to a Fifo
+			Fifo targetFifo = graph.getFifoIded(targetName);
+
+			if (targetFifo == null) {
+				throw new RuntimeException("Dependency target " + targetName
+						+ " does not exist.");
+			}
+
+			if (targetFifo.getDelay() == null) {
+				throw new RuntimeException("Dependency fifo target "
+						+ targetName
+						+ " has no delay to receive the dependency.");
+			} else {
+				target = targetFifo.getDelay();
+			}
 		}
 		// Get the type
 		String type = edgeElt.getAttribute(PiIdentifiers.FIFO_TYPE);
@@ -447,8 +460,12 @@ public class PiParser {
 		targetPortName = (targetPortName == "") ? null : targetPortName;
 		DataOutputPort oPort = (DataOutputPort) source
 				.getPortNamed(sourcePortName);
-		DataInputPort iPort = (DataInputPort) target
-				.getPortNamed(targetPortName);
+		
+		DataInputPort iPort = null;
+		if(target instanceof AbstractVertex)
+			iPort = (DataInputPort) ((AbstractVertex)target).getPortNamed(targetPortName);
+		if(target instanceof Delay)
+			iPort = ((Delay)target).getDataInputPort();
 
 		if (iPort == null) {
 			throw new RuntimeException("Edge target port " + targetPortName

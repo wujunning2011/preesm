@@ -46,9 +46,14 @@ import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.ietr.preesm.experiment.model.pimm.ConfigInputPort;
 import org.ietr.preesm.experiment.model.pimm.ConfigOutputPort;
+import org.ietr.preesm.experiment.model.pimm.DataInputInterface;
 import org.ietr.preesm.experiment.model.pimm.DataInputPort;
 import org.ietr.preesm.experiment.model.pimm.DataOutputPort;
+import org.ietr.preesm.experiment.model.pimm.Delay;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
+import org.ietr.preesm.experiment.model.pimm.InterfaceActor;
+import org.ietr.preesm.experiment.model.pimm.Parameter;
+import org.ietr.preesm.experiment.model.pimm.Parameterizable;
 import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
 import org.ietr.preesm.experiment.model.pimm.Port;
@@ -101,6 +106,15 @@ public class CreateFifoFeature extends AbstractCreateConnectionFeature {
 
 			return true;
 		}
+		
+//		// True if Delay and source is an input interface
+//		Object tgtObj = getBusinessObjectForPictogramElement(context.getTargetAnchor());
+//		Port source = getPort(context.getSourceAnchor());
+//		if (tgtObj instanceof Delay){
+//			if(source.eContainer() instanceof DataInputInterface) {
+//				return true;
+//			}
+//		}
 
 		// False if the target is an outputPort
 		if (target != null && target instanceof DataOutputPort) {
@@ -200,7 +214,7 @@ public class CreateFifoFeature extends AbstractCreateConnectionFeature {
 		Anchor targetAnchor = context.getTargetAnchor();
 		Port source = getPort(sourceAnchor);
 		Port target = getPort(targetAnchor);
-
+		
 		// Create the sourcePort if needed
 		if (source == null) {
 			PictogramElement sourcePe = context.getSourcePictogramElement();
@@ -216,16 +230,25 @@ public class CreateFifoFeature extends AbstractCreateConnectionFeature {
 		}
 
 		// Create the targetPort if needed
-		if (target == null) {
+		if (target == null) {			
 			PictogramElement targetPe = context.getTargetPictogramElement();
-			AbstractAddActorPortFeature addPortFeature = canCreatePort(
-					targetPe, getFeatureProvider(), "input");
-			if (addPortFeature != null) {
-				CustomContext targetContext = new CustomContext(
-						new PictogramElement[] { targetPe });
-				addPortFeature.execute(targetContext);
-				targetAnchor = addPortFeature.getCreatedAnchor();
-				target = addPortFeature.getCreatedPort();
+
+			Object tgtObj = getBusinessObjectForPictogramElement(targetPe);
+			// If the getter is a Parameter or an InterfaceActor
+			if (tgtObj instanceof Delay) {
+				// Create a ConfigInputPort
+				target = PiMMFactory.eINSTANCE.createDataInputPort();
+				((Delay) tgtObj).setDataInputPort((DataInputPort) target);
+			}else{			
+				AbstractAddActorPortFeature addPortFeature = canCreatePort(
+						targetPe, getFeatureProvider(), "input");
+				if (addPortFeature != null) {
+					CustomContext targetContext = new CustomContext(
+							new PictogramElement[] { targetPe });
+					addPortFeature.execute(targetContext);
+					targetAnchor = addPortFeature.getCreatedAnchor();
+					target = addPortFeature.getCreatedPort();
+				}
 			}
 		}
 

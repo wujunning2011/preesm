@@ -375,6 +375,8 @@ public class PiWriter {
 		writeDataElt(fifoElt, PiIdentifiers.DELAY, null);
 		fifoElt.setAttribute(PiIdentifiers.DELAY_EXPRESSION, delay
 				.getExpression().getString());
+//		fifoElt.setAttribute(PiIdentifiers.DELAY_SOURCE, ((AbstractActor)delay.getDataInputPort().getIncomingFifo().getSourcePort().eContainer()).getName());
+//		fifoElt.setAttribute(PiIdentifiers.DELAY_SOURCE_PORT, delay.getDataInputPort().getName());
 		// TODO when delay class will be updated, modify the writer/parser.
 		// Maybe a specific element will be needed to store the Expression
 		// associated to a delay as well as it .h file storing the default value
@@ -451,18 +453,30 @@ public class PiWriter {
 	 *            The {@link Fifo} to write in the {@link Document}
 	 */
 	protected void writeFifos(Element graphElt, Fifo fifo) {
+		// Nothing to add for fifos connected to Delays
+//		if(!(fifo.getTargetPort().eContainer() instanceof AbstractActor))
+//			return; 
+		
 		// Add the node to the document
 		Element fifoElt = appendChild(graphElt, PiIdentifiers.EDGE);
 
 		// Set the source and target attributes
 		AbstractActor source = (AbstractActor) fifo.getSourcePort()
 				.eContainer();
-		AbstractActor target = (AbstractActor) fifo.getTargetPort()
-				.eContainer();
 		fifoElt.setAttribute(PiIdentifiers.EDGE_KIND, PiIdentifiers.FIFO);
 		fifoElt.setAttribute(PiIdentifiers.FIFO_TYPE, fifo.getType());
 		fifoElt.setAttribute(PiIdentifiers.FIFO_SOURCE, source.getName());
-		fifoElt.setAttribute(PiIdentifiers.FIFO_TARGET, target.getName());
+
+		EObject eObj = fifo.getTargetPort().eContainer();
+		if (eObj instanceof AbstractVertex) {
+			AbstractActor target = (AbstractActor) eObj;
+			fifoElt.setAttribute(PiIdentifiers.FIFO_TARGET, target.getName());
+		}
+
+		if (eObj instanceof Delay) {
+			fifoElt.setAttribute(PiIdentifiers.FIFO_TARGET, ((Fifo) eObj.eContainer()).getId());
+		}
+		
 		fifoElt.setAttribute(PiIdentifiers.FIFO_SOURCE_PORT, fifo
 				.getSourcePort().getName());
 		fifoElt.setAttribute(PiIdentifiers.FIFO_TARGET_PORT, fifo

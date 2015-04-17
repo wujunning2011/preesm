@@ -105,18 +105,36 @@ public class PiSDFCodeGenerator{
 			coreIds.put(core, coreId++);	
 		
 		// Generate timings
-		Map<String, AbstractActor> actorsByNames = preprocessor.getActorNames();
+		Map<String, Set<AbstractActor>> actorsByNames = preprocessor.getActorNames();
 		timings = new HashMap<AbstractActor, Map<String, String>>();
 		for (Timing t : scenario.getTimingManager().getTimings()) {
 			String actorName = t.getVertexId();
-			AbstractActor aa = actorsByNames.get(actorName);
-			if(aa != null){ 
-				if (!timings.containsKey(aa)) {
-					timings.put(aa, new HashMap<String, String>());
+			
+			for(AbstractActor aa : actorsByNames.get(actorName)){
+				if(aa != null){ 
+					if (!timings.containsKey(aa)) {
+						timings.put(aa, new HashMap<String, String>());
+					}
+					timings.get(aa).put(t.getOperatorDefinitionId(), t.getStringValue());
 				}
-				timings.get(aa).put(t.getOperatorDefinitionId(), t.getStringValue());
 			}
 		}	
+		
+		// Add default timing if missing
+		Set<String> operatorTypes = scenario.getOperatorDefinitionIds();
+		for(Set<AbstractActor> aaSet : actorsByNames.values()){
+			for (AbstractActor aa : aaSet) {
+				for(String operatorType : operatorTypes){
+					if(!timings.containsKey(aa))
+						timings.put(aa, new HashMap<String, String>());
+				
+					if(!timings.get(aa).containsKey(operatorType)){
+						timings.get(aa).put(operatorType, "100");
+					}					
+				}
+			}	
+		}
+		
 		
 		// Generate constraints
 		constraints = new HashMap<AbstractActor, Set<String>>();
@@ -130,6 +148,30 @@ public class PiSDFCodeGenerator{
 				}
 			}
 		}			
+	}
+	
+	public String generatePiHeaderCode(PiGraph pg) {
+		cppString.setLength(0);
+		
+		/* Put license */
+		append(getLicense());
+		
+		/* Add Include Protection */
+		append("#ifndef PI_" + pg.getName().toUpperCase() + "_H\n");
+		append("#define PI_" + pg.getName().toUpperCase() + "_H\n\n");
+		
+		/* Declare Include Files */
+		append("#include \""+pg.getName()+".h\"\n\n");
+		
+		/* Declare Fcts */
+		append("PiSDFGraph* init_"+pg.getName()+"(Archi* archi, Stack* stack);\n");
+		append("void free_"+pg.getName()+"(PiSDFGraph* top, Stack* stack);\n");
+		append("\n");
+
+		/* Close Include Protection */
+		append("#endif//PI_" + pg.getName().toUpperCase() + "_H\n");
+
+		return cppString.toString();
 	}
 	
 	public String generateHeaderCode(PiGraph pg) {
@@ -148,11 +190,6 @@ public class PiSDFCodeGenerator{
 		/* Declare the addGraph method */
 		append("#define N_FCT_" + pg.getName().toUpperCase() + " " + functionMap.size() + "\n");
 		append("extern lrtFct " + pg.getName().toLowerCase() + "_fcts[N_FCT_" + pg.getName().toUpperCase() + "];\n");
-		append("\n");
-
-		/* Declare Fcts */
-		append("PiSDFGraph* init_"+pg.getName()+"(Archi* archi, Stack* stack);\n");
-		append("void free_"+pg.getName()+"(PiSDFGraph* top, Stack* stack);\n");
 		append("\n");
 		
 		/* Core */
@@ -266,7 +303,7 @@ public class PiSDFCodeGenerator{
 		append("\n");
 
 		/* Generate LrtFct */
-		append("lrtFct " + pg.getName() + "_fcts[N_FCT_" + pg.getName().toUpperCase() + "] = {\n");
+		append("lrtFct " + pg.getName().toLowerCase() + "_fcts[N_FCT_" + pg.getName().toUpperCase() + "] = {\n");
 		for(AbstractActor aa : functionMap.keySet()){
 			append("\t&" + CppNameGenerator.getFunctionName(aa) + ",\n");			
 		}

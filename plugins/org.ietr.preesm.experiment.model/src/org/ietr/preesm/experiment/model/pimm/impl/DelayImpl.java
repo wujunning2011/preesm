@@ -41,6 +41,7 @@ import org.eclipse.emf.common.notify.NotificationChain;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
+import org.ietr.preesm.experiment.model.pimm.DataInputPort;
 import org.ietr.preesm.experiment.model.pimm.Delay;
 import org.ietr.preesm.experiment.model.pimm.Expression;
 import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
@@ -55,6 +56,7 @@ import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitor;
  * The following features are implemented:
  * <ul>
  *   <li>{@link org.ietr.preesm.experiment.model.pimm.impl.DelayImpl#getExpression <em>Expression</em>}</li>
+ *   <li>{@link org.ietr.preesm.experiment.model.pimm.impl.DelayImpl#getDataInputPort <em>Data Input Port</em>}</li>
  * </ul>
  * </p>
  *
@@ -73,6 +75,16 @@ public class DelayImpl extends ParameterizableImpl implements Delay{
 	protected Expression expression;
 
 	/**
+	 * The cached value of the '{@link #getDataInputPort() <em>Data Input Port</em>}' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getDataInputPort()
+	 * @generated
+	 * @ordered
+	 */
+	protected DataInputPort dataInputPort;
+
+	/**
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 */
@@ -80,6 +92,7 @@ public class DelayImpl extends ParameterizableImpl implements Delay{
 		super();
 
 		this.setExpression(PiMMFactory.eINSTANCE.createExpression());
+		this.setDataInputPort(PiMMFactory.eINSTANCE.createDataInputPort());
 	}
 
 	/**
@@ -144,11 +157,56 @@ public class DelayImpl extends ParameterizableImpl implements Delay{
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public DataInputPort getDataInputPort() {
+		return dataInputPort;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public NotificationChain basicSetDataInputPort(DataInputPort newDataInputPort, NotificationChain msgs) {
+		DataInputPort oldDataInputPort = dataInputPort;
+		dataInputPort = newDataInputPort;
+		if (eNotificationRequired()) {
+			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, PiMMPackage.DELAY__DATA_INPUT_PORT, oldDataInputPort, newDataInputPort);
+			if (msgs == null) msgs = notification; else msgs.add(notification);
+		}
+		return msgs;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public void setDataInputPort(DataInputPort newDataInputPort) {
+		if (newDataInputPort != dataInputPort) {
+			NotificationChain msgs = null;
+			if (dataInputPort != null)
+				msgs = ((InternalEObject)dataInputPort).eInverseRemove(this, EOPPOSITE_FEATURE_BASE - PiMMPackage.DELAY__DATA_INPUT_PORT, null, msgs);
+			if (newDataInputPort != null)
+				msgs = ((InternalEObject)newDataInputPort).eInverseAdd(this, EOPPOSITE_FEATURE_BASE - PiMMPackage.DELAY__DATA_INPUT_PORT, null, msgs);
+			msgs = basicSetDataInputPort(newDataInputPort, msgs);
+			if (msgs != null) msgs.dispatch();
+		}
+		else if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET, PiMMPackage.DELAY__DATA_INPUT_PORT, newDataInputPort, newDataInputPort));
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	@Override
 	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
 		switch (featureID) {
 			case PiMMPackage.DELAY__EXPRESSION:
 				return basicSetExpression(null, msgs);
+			case PiMMPackage.DELAY__DATA_INPUT_PORT:
+				return basicSetDataInputPort(null, msgs);
 		}
 		return super.eInverseRemove(otherEnd, featureID, msgs);
 	}
@@ -163,6 +221,8 @@ public class DelayImpl extends ParameterizableImpl implements Delay{
 		switch (featureID) {
 			case PiMMPackage.DELAY__EXPRESSION:
 				return getExpression();
+			case PiMMPackage.DELAY__DATA_INPUT_PORT:
+				return getDataInputPort();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -177,6 +237,9 @@ public class DelayImpl extends ParameterizableImpl implements Delay{
 		switch (featureID) {
 			case PiMMPackage.DELAY__EXPRESSION:
 				setExpression((Expression)newValue);
+				return;
+			case PiMMPackage.DELAY__DATA_INPUT_PORT:
+				setDataInputPort((DataInputPort)newValue);
 				return;
 		}
 		super.eSet(featureID, newValue);
@@ -193,6 +256,9 @@ public class DelayImpl extends ParameterizableImpl implements Delay{
 			case PiMMPackage.DELAY__EXPRESSION:
 				setExpression((Expression)null);
 				return;
+			case PiMMPackage.DELAY__DATA_INPUT_PORT:
+				setDataInputPort((DataInputPort)null);
+				return;
 		}
 		super.eUnset(featureID);
 	}
@@ -207,6 +273,8 @@ public class DelayImpl extends ParameterizableImpl implements Delay{
 		switch (featureID) {
 			case PiMMPackage.DELAY__EXPRESSION:
 				return expression != null;
+			case PiMMPackage.DELAY__DATA_INPUT_PORT:
+				return dataInputPort != null;
 		}
 		return super.eIsSet(featureID);
 	}

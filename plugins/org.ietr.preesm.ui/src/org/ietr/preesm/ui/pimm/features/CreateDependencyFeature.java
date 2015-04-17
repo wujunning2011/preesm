@@ -89,12 +89,16 @@ public class CreateDependencyFeature extends AbstractCreateConnectionFeature {
 	public boolean canCreate(ICreateConnectionContext context) {
 		// This function is called when selecting the end of a created
 		// dependency. We assume that the canStartConnection is already true.
-
+		
 		// Refresh to remove all remaining tooltip;
 		getDiagramBehavior().refresh();
 		PictogramElement targetPE = context.getTargetPictogramElement();
 		Object targetObj = getBusinessObjectForPictogramElement(targetPE);
 
+
+		if(targetObj instanceof DataInputPort)
+			return false;
+		
 		// False if the target is a Graph (i.e. the diagram)
 		if (targetObj instanceof PiGraph) {
 			return false;
@@ -226,6 +230,10 @@ public class CreateDependencyFeature extends AbstractCreateConnectionFeature {
 		if (setter == null) {
 			return null;
 		}
+		
+		// Ugly fix for Delay
+		if(getter instanceof DataInputPort)
+			return null;
 
 		// If getter port is null
 		if (getter == null) {

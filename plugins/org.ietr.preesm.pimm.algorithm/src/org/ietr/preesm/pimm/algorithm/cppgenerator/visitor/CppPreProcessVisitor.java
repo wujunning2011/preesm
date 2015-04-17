@@ -38,8 +38,10 @@
 package org.ietr.preesm.pimm.algorithm.cppgenerator.visitor;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 
 import org.ietr.dftools.workflow.tools.WorkflowLogger;
 import org.ietr.preesm.experiment.model.pimm.AbstractActor;
@@ -83,7 +85,7 @@ public class CppPreProcessVisitor extends PiMMVisitor {
 	private Map<Port, Integer> portMap = new HashMap<Port, Integer>();
 	private Map<ISetter, String> setterMap = new HashMap<ISetter, String>();
 	// Map from Actor names to pairs of CoreType numbers and Timing expressions
-	private Map<String, AbstractActor> actorNames = new HashMap<String, AbstractActor>();
+	private Map<String, Set<AbstractActor>> actorNames = new HashMap<String, Set<AbstractActor>>();
 	private Map<AbstractActor, Integer> functionMap = new LinkedHashMap<AbstractActor, Integer>();;
 
 	private Map<AbstractActor, Integer> dataInPortIndices = new HashMap<AbstractActor, Integer>();
@@ -99,7 +101,7 @@ public class CppPreProcessVisitor extends PiMMVisitor {
 		return portMap;
 	}
 
-	public Map<String, AbstractActor> getActorNames() {
+	public Map<String, Set<AbstractActor>> getActorNames() {
 		return actorNames;
 	}
 	
@@ -161,7 +163,10 @@ public class CppPreProcessVisitor extends PiMMVisitor {
 				WorkflowLogger.getLogger().warning("Actor "+a.getName()+" doesn't have correct refinement.");
 		}
 		
-		actorNames.put(a.getName(), a);
+		if(!actorNames.containsKey(a.getName()))
+			actorNames.put(a.getName(), new HashSet<AbstractActor>());
+		
+		actorNames.get(a.getName()).add(a);
 				
 		visitAbstractActor(a);
 	}

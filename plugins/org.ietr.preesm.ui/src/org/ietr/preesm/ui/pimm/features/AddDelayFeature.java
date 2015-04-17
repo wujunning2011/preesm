@@ -38,13 +38,18 @@ package org.ietr.preesm.ui.pimm.features;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.draw2d.Triangle;
 import org.eclipse.graphiti.datatypes.ILocation;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.ICustomContext;
 import org.eclipse.graphiti.features.custom.AbstractCustomFeature;
 import org.eclipse.graphiti.mm.algorithms.Ellipse;
+import org.eclipse.graphiti.mm.algorithms.Polygon;
 import org.eclipse.graphiti.mm.algorithms.Polyline;
+import org.eclipse.graphiti.mm.algorithms.Rectangle;
+import org.eclipse.graphiti.mm.algorithms.RoundedRectangle;
 import org.eclipse.graphiti.mm.algorithms.styles.Point;
+import org.eclipse.graphiti.mm.pictograms.BoxRelativeAnchor;
 import org.eclipse.graphiti.mm.pictograms.ChopboxAnchor;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
@@ -54,8 +59,11 @@ import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.IGaService;
 import org.eclipse.graphiti.services.IPeCreateService;
 import org.eclipse.graphiti.services.IPeLayoutService;
+import org.eclipse.graphiti.util.ColorConstant;
+import org.ietr.preesm.experiment.model.pimm.DataInputPort;
 import org.ietr.preesm.experiment.model.pimm.Delay;
 import org.ietr.preesm.experiment.model.pimm.Fifo;
+import org.ietr.preesm.experiment.model.pimm.PiGraph;
 import org.ietr.preesm.experiment.model.pimm.PiMMFactory;
 
 /**
@@ -119,6 +127,7 @@ public class AddDelayFeature extends AbstractCustomFeature {
 
 		// Create the Delay and add it to the Fifo
 		Delay delay = PiMMFactory.eINSTANCE.createDelay();
+		DataInputPort port = delay.getDataInputPort();
 		fifo.setDelay(delay);
 
 		// Get the GaService
@@ -133,22 +142,55 @@ public class AddDelayFeature extends AbstractCustomFeature {
 		ContainerShape containerShape = peCreateService.createContainerShape(
 				targetDiagram, true);
 
+		Rectangle invisibleRectangle = gaService
+				.createInvisibleRectangle(containerShape);
+//		invisibleRectangle.setBackground(manageColor(new ColorConstant(255,255,255)));
+//		invisibleRectangle.setForeground(manageColor(new ColorConstant(0,0,0)));
+		gaService.setLocationAndSize(invisibleRectangle, context.getX(),
+				context.getY(), 20, 32);
+		
 		// Create a graphical representation for the Delay
 		Ellipse ellipse;
+		final BoxRelativeAnchor delayBoxAnchor;
 		{
-			ellipse = gaService.createEllipse(containerShape);
-			ellipse.setBackground(manageColor(AddActorFeature.ACTOR_FOREGROUND));
+			delayBoxAnchor = peCreateService
+					.createBoxRelativeAnchor(containerShape);
+			delayBoxAnchor.setRelativeWidth(1.0);
+			delayBoxAnchor.setRelativeHeight(0.5);
+			delayBoxAnchor.setReferencedGraphicsAlgorithm(invisibleRectangle);
+						
+			// create and set graphics algorithm for the anchor
+			ellipse = gaService.createEllipse(delayBoxAnchor);
 			ellipse.setForeground(manageColor(AddActorFeature.ACTOR_FOREGROUND));
-			ellipse.setLineWidth(1);
-			ellipse.setLineVisible(false);
-			gaService.setLocationAndSize(ellipse, context.getX() - 8,
-					context.getY() - 8, 16, 16);
-		}
-		link(containerShape, delay);
+			ellipse.setBackground(manageColor(AddActorFeature.ACTOR_FOREGROUND));
+			ellipse.setLineWidth(2);
+			gaService.setLocationAndSize(ellipse, -20, -16, 20, 20);
 
+			link(delayBoxAnchor, delay);
+		}
+
+		link(containerShape, delay);
 		// Add a ChopBoxAnchor for the Delay
-		ChopboxAnchor cba = peCreateService.createChopboxAnchor(containerShape);
-		link(cba, delay);
+//		ChopboxAnchor cba = peCreateService.createChopboxAnchor(containerShape);
+//		link(cba, delay);
+		
+		RoundedRectangle rRectangle; 
+		{		
+			final BoxRelativeAnchor boxAnchor = peCreateService
+					.createBoxRelativeAnchor(containerShape);
+			boxAnchor.setRelativeWidth(1.0);
+			boxAnchor.setRelativeHeight(0.5);
+			boxAnchor.setReferencedGraphicsAlgorithm(invisibleRectangle);
+			
+			// create and set graphics algorithm for the anchor
+			rRectangle = gaService.createRoundedRectangle(boxAnchor, 5, 5);
+			rRectangle.setForeground(manageColor(AddDataInputPortFeature.DATA_INPUT_PORT_FOREGROUND));
+			rRectangle.setBackground(manageColor(AddDataInputPortFeature.DATA_INPUT_PORT_BACKGROUND));
+			rRectangle.setLineWidth(2);
+			gaService.setLocationAndSize(rRectangle, -18, 0, 16, 16);
+
+			link(boxAnchor, port);
+		}
 
 		// Connect the polyline to the delay appropriately
 		{
@@ -205,7 +247,7 @@ public class AddDelayFeature extends AbstractCustomFeature {
 			FreeFormConnection preConnection = peCreateService
 					.createFreeFormConnection(getDiagram());
 			preConnection.setStart(connection.getStart());
-			preConnection.setEnd(cba);
+			preConnection.setEnd(delayBoxAnchor);
 			preConnection.getBendpoints().addAll(precedingPoints);
 			// Create the associated Polyline
 			Polyline polyline = gaService.createPolyline(preConnection);
@@ -214,7 +256,7 @@ public class AddDelayFeature extends AbstractCustomFeature {
 			link(preConnection, fifo);
 
 			// Reconnect the original connection
-			connection.setStart(cba);
+			connection.setStart(delayBoxAnchor);
 
 			// Select the whole fifo
 			// PictogramElement[] pictograms = {preConnection, connection};

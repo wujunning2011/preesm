@@ -259,9 +259,16 @@ public class CPPCodeGenerationVisitor extends PiMMVisitor {
 			}
 		}
 
+		int nbFifos = 0;
+		for(Fifo fifo : pg.getFifos()){
+			if(!(fifo.getTargetPort().eContainer() instanceof Delay)){
+				nbFifos++;
+			}
+		}
+		
 		// Create a graph and a top vertex
 		append("\tPiSDFGraph* graph = CREATE(stack, PiSDFGraph)(\n"
-				+ "\t\t/*Edges*/    " + pg.getFifos().size() + ",\n"
+				+ "\t\t/*Edges*/    " + nbFifos + ",\n"
 				+ "\t\t/*Params*/   " + pg.getParameters().size() + ",\n"
 				+ "\t\t/*InputIf*/  " + nInIf + ",\n" + "\t\t/*OutputIf*/ "
 				+ nOutif + ",\n" + "\t\t/*Config*/   " + nConfig + ",\n"
@@ -459,7 +466,6 @@ public class CPPCodeGenerationVisitor extends PiMMVisitor {
 	@Override
 	public void visitFifo(Fifo f) {
 		// Call the addEdge method on the current graph
-		append("\tgraph->connect(\n");
 
 		DataOutputPort srcPort = f.getSourcePort();
 		DataInputPort snkPort = f.getTargetPort();
@@ -476,6 +482,9 @@ public class CPPCodeGenerationVisitor extends PiMMVisitor {
 									+ " is not defined in scenario (considered size = 1).");
 			typeSize = 1;
 		}
+
+		if(snkPort.eContainer() instanceof Delay)
+			return;
 
 		AbstractVertex srcActor = (AbstractVertex) srcPort.eContainer();
 		AbstractVertex snkActor = (AbstractVertex) snkPort.eContainer();
@@ -504,8 +513,8 @@ public class CPPCodeGenerationVisitor extends PiMMVisitor {
 				delay   = delay.replaceAll("\\b"+cfgPort.getName()+"\\b", paramName);
 			}
 		}
-		
 
+		append("\tgraph->connect(\n");
 		append("\t\t/*Src*/ "
 				+ CppNameGenerator.getVertexName(srcActor) 
 				+ ", /*SrcPrt*/ " + portMap.get(srcPort)
@@ -518,10 +527,15 @@ public class CPPCodeGenerationVisitor extends PiMMVisitor {
 //				+ ", /*Cons*/ \"(" + snkProd + ")*sizeof(" + f.getType() + ")\",\n");
 				+ ", /*Cons*/ \"(" + snkProd + ")*" + typeSize + "\",\n");
 
-		if (f.getDelay() != null)
+		if (f.getDelay() != null){
+			String con = "0";
+			if(f.getDelay().getDataInputPort() != null){
+				con = CppNameGenerator.getVertexName(
+						((AbstractVertex)f.getDelay().getDataInputPort().getIncomingFifo().getSourcePort().eContainer()));
+			}
 //			append("\t\t/*Delay*/ \"(" + delay + ")*sizeof(" + f.getType() + ")\",0);\n\n");
-			append("\t\t/*Delay*/ \"(" + delay + ")*" + typeSize + "\",0);\n\n");
-		else
+			append("\t\t/*Delay*/ \"(" + delay + ")*" + typeSize + "\"," + con + ");\n\n");
+		}else
 			append("\t\t/*Delay*/ \"0\",0);\n\n");			
 	}
 

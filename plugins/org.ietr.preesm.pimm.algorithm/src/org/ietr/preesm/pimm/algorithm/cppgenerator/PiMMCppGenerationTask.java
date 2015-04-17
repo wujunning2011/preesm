@@ -47,6 +47,7 @@ import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.ietr.dftools.architecture.slam.Design;
 import org.ietr.dftools.workflow.WorkflowException;
 import org.ietr.dftools.workflow.elements.Workflow;
 import org.ietr.dftools.workflow.implement.AbstractTaskImplementation;
@@ -71,6 +72,7 @@ public class PiMMCppGenerationTask extends AbstractTaskImplementation {
 		String graphCode = launcher.generateGraphCode(pg);
 		String fctCode = launcher.generateFunctionCode(pg);
 		String hCode = launcher.generateHeaderCode(pg);
+		String hPiCode = launcher.generatePiHeaderCode(pg);
 
 		// Get the root of the workspace
 		IWorkspace workspace = ResourcesPlugin.getWorkspace();
@@ -80,8 +82,9 @@ public class PiMMCppGenerationTask extends AbstractTaskImplementation {
 		IProject project = root.getProject(projectName);
 
 		// Get the name of the folder for code generation
-		String codegenFolder = scenario.getCodegenManager().getCodegenDirectory();
-		if (codegenFolder == null) codegenFolder = "/Code/generated/cpp/";
+//		String codegenFolder = scenario.getCodegenManager().getCodegenDirectory();
+//		if (codegenFolder == null) codegenFolder = "/Code/generated/";
+		String codegenFolder = "/Code/generated/";
 
 		// Create the folder and its parent if necessary
 		String folderPath = project.getLocation() + codegenFolder;
@@ -90,22 +93,29 @@ public class PiMMCppGenerationTask extends AbstractTaskImplementation {
 
 		// Create the files
 		String hFilePath = pg.getName() + ".h";
-		File hFile = new File(parent, hFilePath);
+		File hFile = new File(folderPath, hFilePath);
+
+		String hPiFilePath = "pi_" + pg.getName() + ".h";
+		File hPiFile = new File(folderPath, hPiFilePath);
 		
 		String piGraphfilePath = "pi_" + pg.getName() + ".cpp";
-		File piGraphFile = new File(parent, piGraphfilePath);
+		File piGraphFile = new File(folderPath, piGraphfilePath);
 		
 		String piFctfilePath = "fct_" + pg.getName() + ".cpp";
-		File piFctFile = new File(parent, piFctfilePath);
+		File piFctFile = new File(folderPath, piFctfilePath);
 		
 		// Write the files
 		FileWriter piGraphWriter;
 		FileWriter piFctWriter;
 		FileWriter hWriter;
+		FileWriter hPiWriter;
 		try {
 			hWriter = new FileWriter(hFile);
 			hWriter.write(hCode);
 			hWriter.close();
+			hPiWriter = new FileWriter(hPiFile);
+			hPiWriter.write(hPiCode);
+			hPiWriter.close();
 			piGraphWriter = new FileWriter(piGraphFile);
 			piGraphWriter.write(graphCode);
 			piGraphWriter.close();

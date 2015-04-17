@@ -1495,13 +1495,22 @@ public interface PiMMPackage extends EPackage {
 	int DELAY__EXPRESSION = PARAMETERIZABLE_FEATURE_COUNT + 0;
 
 	/**
+	 * The feature id for the '<em><b>Data Input Port</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int DELAY__DATA_INPUT_PORT = PARAMETERIZABLE_FEATURE_COUNT + 1;
+
+	/**
 	 * The number of structural features of the '<em>Delay</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int DELAY_FEATURE_COUNT = PARAMETERIZABLE_FEATURE_COUNT + 1;
+	int DELAY_FEATURE_COUNT = PARAMETERIZABLE_FEATURE_COUNT + 2;
 
 	/**
 	 * The feature id for the '<em><b>String</b></em>' attribute.
@@ -2522,6 +2531,17 @@ public interface PiMMPackage extends EPackage {
 	EReference getDelay_Expression();
 
 	/**
+	 * Returns the meta object for the containment reference '{@link org.ietr.preesm.experiment.model.pimm.Delay#getDataInputPort <em>Data Input Port</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the containment reference '<em>Data Input Port</em>'.
+	 * @see org.ietr.preesm.experiment.model.pimm.Delay#getDataInputPort()
+	 * @see #getDelay()
+	 * @generated
+	 */
+	EReference getDelay_DataInputPort();
+
+	/**
 	 * Returns the meta object for class '{@link org.ietr.preesm.experiment.model.pimm.Expression <em>Expression</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -3268,6 +3288,14 @@ public interface PiMMPackage extends EPackage {
 		 * @generated
 		 */
 		EReference DELAY__EXPRESSION = eINSTANCE.getDelay_Expression();
+
+		/**
+		 * The meta object literal for the '<em><b>Data Input Port</b></em>' containment reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference DELAY__DATA_INPUT_PORT = eINSTANCE.getDelay_DataInputPort();
 
 		/**
 		 * The meta object literal for the '{@link org.ietr.preesm.experiment.model.pimm.impl.ExpressionImpl <em>Expression</em>}' class.

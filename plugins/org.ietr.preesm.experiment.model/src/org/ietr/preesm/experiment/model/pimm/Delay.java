@@ -47,6 +47,7 @@ import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitable;
  * The following features are supported:
  * <ul>
  *   <li>{@link org.ietr.preesm.experiment.model.pimm.Delay#getExpression <em>Expression</em>}</li>
+ *   <li>{@link org.ietr.preesm.experiment.model.pimm.Delay#getDataInputPort <em>Data Input Port</em>}</li>
  * </ul>
  * </p>
  *
@@ -54,7 +55,7 @@ import org.ietr.preesm.experiment.model.pimm.util.PiMMVisitable;
  * @model
  * @generated
  */
-public interface Delay extends Parameterizable, PiMMVisitable {
+public interface Delay extends Parameterizable {
 
 	/**
 	 * Returns the value of the '<em><b>Expression</b></em>' containment reference.
@@ -81,4 +82,30 @@ public interface Delay extends Parameterizable, PiMMVisitable {
 	 * @generated
 	 */
 	void setExpression(Expression value);
+
+	/**
+	 * Returns the value of the '<em><b>Data Input Port</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>Data Input Port</em>' containment reference isn't clear,
+	 * there really should be more of a description here...
+	 * </p>
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Data Input Port</em>' containment reference.
+	 * @see #setDataInputPort(DataInputPort)
+	 * @see org.ietr.preesm.experiment.model.pimm.PiMMPackage#getDelay_DataInputPort()
+	 * @model containment="true" required="true"
+	 * @generated
+	 */
+	DataInputPort getDataInputPort();
+
+	/**
+	 * Sets the value of the '{@link org.ietr.preesm.experiment.model.pimm.Delay#getDataInputPort <em>Data Input Port</em>}' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Data Input Port</em>' containment reference.
+	 * @see #getDataInputPort()
+	 * @generated
+	 */
+	void setDataInputPort(DataInputPort value);
 } // Delay

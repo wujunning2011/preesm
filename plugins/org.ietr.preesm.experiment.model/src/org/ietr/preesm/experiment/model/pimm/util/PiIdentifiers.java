@@ -119,6 +119,8 @@ public class PiIdentifiers {
 	// DELAY
 	public static final String DELAY = "delay";
 	public static final String DELAY_EXPRESSION = EXPR;
+	public static final String DELAY_SOURCE = "delay_source";
+	public static final String DELAY_SOURCE_PORT = "delay_sourceport";
 	// DEPENDENCIES
 	public static final String DEPENDENCY = "dependency";
 	public static final String DEPENDENCY_SOURCE = SOURCE;
