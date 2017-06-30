@@ -14,6 +14,7 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
 Export-Package: org.ietr.preesm.evaluator
-Import-Package: org.ietr.preesm.algorithm.exportXml,
+Import-Package: org.apache.commons.lang.math;version="2.6.0",
+ org.ietr.preesm.algorithm.exportXml,
  org.ietr.preesm.algorithm.importSdf3Xml
 Bundle-Vendor: IETR/INSA Rennes
