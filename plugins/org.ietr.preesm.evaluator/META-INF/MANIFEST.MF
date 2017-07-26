@@ -9,12 +9,13 @@ Require-Bundle: org.eclipse.core.runtime,
  org.ietr.dftools.algorithm,
  org.ietr.preesm.core,
  org.clojars.gilesc.jgrapht;bundle-version="0.8.2",
- org.gnu.glpk.java;bundle-version="1.0.32"
+ org.gnu.glpk.java;bundle-version="1.0.32",
+ org.ietr.preesm.algorithm;bundle-version="2.2.10",
+ org.apache.commons.lang3;bundle-version="3.5.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
-Bundle-ClassPath: .
+Bundle-ClassPath: .,
+ lib/gurobi.jar,
+ lib/glpk-java.jar
 Export-Package: org.ietr.preesm.evaluator
-Import-Package: org.apache.commons.lang.math;version="2.6.0",
- org.ietr.preesm.algorithm.exportXml,
- org.ietr.preesm.algorithm.importSdf3Xml
 Bundle-Vendor: IETR/INSA Rennes
